@@ -12,14 +12,16 @@ class MakeUmlClassDiagram extends Command
      *
      * @var string
      */
-    protected $signature = 'make:uml:class_diagram {directory} {outputFile?}';
+    protected $signature = 'make:uml:class_diagram 
+                                {directory : Directory to get the PHP code}
+                                {outputFile? : A path to save the plantUml file (by default will be store it in ./documentation/class_diagrams/) }';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Create plant uml source code from some PHP directory.';
 
     /**
      * Create a new command instance.
