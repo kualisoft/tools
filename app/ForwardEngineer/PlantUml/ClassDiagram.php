@@ -9,6 +9,8 @@
 namespace App\ForwardEngineer\PlantUml;
 
 use App\ForwardEngineer\ClassDiagram as BaseClassDiagram;
+use App\ForwardEngineer\ContainerClasses;
+use App\ForwardEngineer\TypeLine;
 
 /**
  * Class ClassDiagram
@@ -18,6 +20,8 @@ use App\ForwardEngineer\ClassDiagram as BaseClassDiagram;
  */
 class ClassDiagram extends BaseClassDiagram
 {
+
+
 
     /**
      * Parse
@@ -29,16 +33,38 @@ class ClassDiagram extends BaseClassDiagram
         $source = $this->getSource();
         $lines = explode("\n", $source);
 
+        $container = new ContainerClasses();
+        $ns = null;
+        $class = null;
+
+
         foreach ($lines as $line) {
-            dump($this->detectType($line));
+            $type = $this->detectType($line);
+            if ($type) {
+                if ($type->is('namespace')) {
+                    $ns = $container->addNamespace($type);
+                } elseif ($type->is('class')) {
+                    $class = $ns->addClass($type);
+                } elseif ($type->is('trait', 'method', 'property', 'constant')) {
+                    $class->add($type->type, $type);
+                } elseif ($type->is('relation')) {
+
+                }
+            }
         }
+        
     }
 
     /**
-     * @param $line
+     * Detect the type of line.
+     *
+     * @param string $input_line
+     *
+     * @return array
      */
     public function detectType($input_line)
     {
+        $return = [];
         $visibilities = [
             '#' => 'protected',
             '+' => 'public',
@@ -48,7 +74,7 @@ class ClassDiagram extends BaseClassDiagram
         // Namespace
         preg_match('/namespace ([\w.]*).* {/', $input_line, $output_array);
         if ($output_array) {
-            return [
+            $return = [
                 'type' => 'namespace',
                 'name' => $output_array[1],
             ];
@@ -57,7 +83,7 @@ class ClassDiagram extends BaseClassDiagram
         // Class
         preg_match('/class (.*?) << class >> {/', $input_line, $output_array);
         if ($output_array) {
-            return [
+            $return = [
                 'type' => 'class',
                 'name' => $output_array[1],
             ];
@@ -66,7 +92,7 @@ class ClassDiagram extends BaseClassDiagram
         // Trait
         preg_match('/class ([\w.]*).*trait.* {/', $input_line, $output_array);
         if ($output_array) {
-            return [
+            $return = [
                 'type' => 'trait',
                 'name' => $output_array[1],
             ];
@@ -75,7 +101,7 @@ class ClassDiagram extends BaseClassDiagram
         // Method
         preg_match('/([\#\-\+])([\w]*)\(\)/', $input_line, $output_array);
         if ($output_array) {
-            return [
+            $return = [
                 'type' => 'method',
                 'name' => $output_array[2],
                 'visibility' => $visibilities[$output_array[1]]
@@ -84,13 +110,13 @@ class ClassDiagram extends BaseClassDiagram
 
         // Property
         preg_match('/([\#\-\+])([\w]*)/', $input_line, $output_array);
-        if ($output_array) {
+        if (!$return and $output_array) {
             $type = 'property';
             if ($output_array[2] == strtoupper($output_array[2])) {
                 $type = 'constant';
             }
 
-            return [
+            $return = [
                 'type' => $type,
                 'name' => $output_array[2],
                 'visibility' => $visibilities[$output_array[1]]
@@ -100,11 +126,27 @@ class ClassDiagram extends BaseClassDiagram
         // Herency Relation
         preg_match('/([\w.]*)\s?--\|>\s?(.*)/', $input_line, $output_array);
         if ($output_array) {
-            return [
-                'type' => 'herency',
+            $return = [
+                'type' => 'relation',
+                'connection' => 'herency',
                 'parent' => $output_array[2],
                 'children' => $output_array[1]
             ];
         }
+
+        // Close Tag
+        preg_match('/\}/', $input_line, $output_array);
+        if ($output_array) {
+            $return = [
+                'type' => 'closeTag',
+            ];
+        }
+
+        if ($return) {
+            return new TypeLine($return);
+        }
+
+
+        return $return;
     }
 }
