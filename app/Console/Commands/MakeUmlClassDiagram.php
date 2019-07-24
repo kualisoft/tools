@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Filesystem\Filesystem;
 
 class MakeUmlClassDiagram extends Command
 {
@@ -40,17 +41,17 @@ class MakeUmlClassDiagram extends Command
      */
     public function handle()
     {
+        $fs = new Filesystem();
+        $directory_param = rtrim($this->argument('directory'), '/');
         $cd = getcwd() . '/';
 
-        $directory = $cd . $this->argument('directory');
+        $directory = $cd . $directory_param;
         $directory = realpath($directory);
-        dump($directory);
 
         $outputfile = $this->argument('outputFile');
-        if (!$outputfile) {
-            $name = $this->argument('directory');
-//            $name = explode('/', $directory);
-//            $name = end($name);
+
+        if (!$outputfile) { // We put the puml in the documentation directory.
+            $name = $directory_param;
             $outputfile = $cd . 'documentation/class_diagrams/' . $name . '.puml';
         } else {
             $outputfile = $cd . $outputfile;
@@ -61,18 +62,16 @@ class MakeUmlClassDiagram extends Command
         array_pop($output_dir);
         $output_dir = implode('/', $output_dir);
         if (!is_dir($output_dir))
-            mkdir($output_dir, 0777, true);
-
-        dump($outputfile);
+            $fs->mkdir($output_dir, 0777);
 
         $process = new Process(['umlwriter', 'diagram:render', '--processor=plantuml', $directory]);
         $process->run();
 
         $diagram_code = $process->getOutput();
 
-        file_put_contents($outputfile, $diagram_code);
+        $fs->dumpFile($outputfile, $diagram_code);
 
-//        umlwriter diagram:render --processor=plantuml ./app/ > temp1.txt
-//plantuml -Tpng temp1.txt -o /tmp
+        // umlwriter diagram:render --processor=plantuml ./app/ > temp1.txt
+        // plantuml -Tpng temp1.txt -o /tmp
     }
 }
