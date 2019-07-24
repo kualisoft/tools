@@ -44,11 +44,15 @@ class ClassDiagram extends BaseClassDiagram
                 if ($type->is('namespace')) {
                     $ns = $container->addNamespace($type);
                 } elseif ($type->is('class')) {
-                    $class = $ns->addClass($type);
+                    if ($ns) {
+                        $class = $ns->addClass($type);
+                    } else { // added to the container directly
+                        $class = $container->addClass($type);
+                    }
                 } elseif ($type->is('trait', 'method', 'property', 'constant')) {
                     $class->add($type->type, $type);
                 } elseif ($type->is('relation')) {
-
+                    $container->setRelation($type);
                 }
             }
         }
