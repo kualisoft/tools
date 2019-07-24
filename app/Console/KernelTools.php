@@ -8,6 +8,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\Install;
 
 class KernelTools extends Kernel
 {
@@ -18,7 +19,8 @@ class KernelTools extends Kernel
      * @var array
      */
     protected $commands = [
-        Commands\MakeUmlClassDiagram::class
+        Commands\MakeUmlClassDiagram::class,
+        Install::class
     ];
 
 
