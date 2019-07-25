@@ -56,7 +56,6 @@ class ClassDiagram extends BaseClassDiagram
                 }
             }
         }
-        
     }
 
     /**
