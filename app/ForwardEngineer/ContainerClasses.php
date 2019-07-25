@@ -14,7 +14,7 @@ namespace App\ForwardEngineer;
  * @package App\ForwardEngineer
  * @author  Uziel García <uzielgl@gmail.com>
  */
-class ContainerClasses
+class ContainerClasses implements \JsonSerializable
 {
 
     protected $namespaces = [];
@@ -76,5 +76,10 @@ class ContainerClasses
                 }
             }
         }
+    }
+
+    public function jsonSerialize()
+    {
+        return get_object_vars($this);
     }
 }

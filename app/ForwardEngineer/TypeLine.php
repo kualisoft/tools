@@ -14,7 +14,7 @@ namespace App\ForwardEngineer;
  * @package App\ForwardEngineer
  * @author  Uziel García <uzielgl@gmail.com>
  */
-class TypeLine
+class TypeLine implements \JsonSerializable
 {
     public $type;
     public $name;
@@ -47,5 +47,10 @@ class TypeLine
     public function is(...$types)
     {
         return in_array($this->type, $types);
+    }
+
+    public function jsonSerialize()
+    {
+        return get_object_vars($this);
     }
 }

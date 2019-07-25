@@ -16,7 +16,7 @@ use Illuminate\Http\Resources\DelegatesToResource;
  * @package App\ForwardEngineer
  * @author  Uziel García <uzielgl@gmail.com>
  */
-class _Base
+class _Base implements \JsonSerializable
 {
     use DelegatesToResource;
 
@@ -29,5 +29,10 @@ class _Base
     public function __construct($typeLine)
     {
         $this->resource = $typeLine;
+    }
+
+    public function jsonSerialize()
+    {
+        return get_object_vars($this);
     }
 }
