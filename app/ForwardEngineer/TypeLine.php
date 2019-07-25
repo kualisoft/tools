@@ -23,7 +23,6 @@ class TypeLine implements \JsonSerializable
     // For relations types.
     public $parent;
     public $children;
-    public $connection; // Herency, composition, etc.
 
     /**
      * TypeLine constructor.

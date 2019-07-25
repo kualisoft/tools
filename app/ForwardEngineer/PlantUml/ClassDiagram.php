@@ -21,14 +21,12 @@ use App\ForwardEngineer\TypeLine;
 class ClassDiagram extends BaseClassDiagram
 {
 
-
-
     /**
      * Parse
      *
      * @return void
      */
-    public function parse()
+    public function getContainerClasses()
     {
         $source = $this->getSource();
         $lines = explode("\n", $source);
@@ -36,7 +34,6 @@ class ClassDiagram extends BaseClassDiagram
         $container = new ContainerClasses();
         $ns = null;
         $class = null;
-
 
         foreach ($lines as $line) {
             $type = $this->detectType($line);
@@ -46,6 +43,7 @@ class ClassDiagram extends BaseClassDiagram
                 } elseif ($type->is('class')) {
                     if ($ns) {
                         $class = $ns->addClass($type);
+                        $class->namespace = $ns;
                     } else { // added to the container directly
                         $class = $container->addClass($type);
                     }
@@ -56,6 +54,8 @@ class ClassDiagram extends BaseClassDiagram
                 }
             }
         }
+
+        return $container;
     }
 
     /**
@@ -131,7 +131,7 @@ class ClassDiagram extends BaseClassDiagram
         if ($output_array) {
             $return = [
                 'type' => 'relation',
-                'connection' => 'herency',
+                'name' => 'herency',
                 'parent' => $output_array[2],
                 'children' => $output_array[1]
             ];

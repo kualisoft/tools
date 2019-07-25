@@ -23,6 +23,18 @@ class _Class extends _Base
     public $constants = [];
     public $relations = [];
     public $traits = [];
+    public $namespace;
+
+
+    /**
+     * @return \ReflectionClass
+     *
+     * @throws \ReflectionException
+     */
+    public function getReflector()
+    {
+        return new \ReflectionClass($this->getClassName());
+    }
 
     /**
      * Add some item to the class.
@@ -38,4 +50,20 @@ class _Class extends _Base
         $this->{$property}[] = $typeLine;
         return $this;
     }
+
+
+    public function getClassName()
+    {
+        $prefix = '\\';
+
+        if ($this->namespace) {
+            $prefix .= $this->namespace->getQualifiedName();
+        }
+
+        return $prefix . '\\' . $this->name;
+    }
+
+
+
+//    public function
 }

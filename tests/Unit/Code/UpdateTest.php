@@ -8,6 +8,7 @@
 
 namespace Tests\Unit\Code;
 
+use App\ForwardEngineer\Code\ClassUpdater;
 use App\ForwardEngineer\PlantUml\ClassDiagram;
 use Symfony\Component\Filesystem\Filesystem;
 use Tests\TestCase;
@@ -32,10 +33,15 @@ class UpdateTest extends TestCase
         $classDiagram->setFilesystem(new Filesystem());
 
         $classDiagram->setSourceFile($plant_uml_file);
+        $container = $classDiagram->getContainerClasses();
 
+        $contactControllerClass = $container->namespaces[0]->classes[1];
 
-        $classDiagram->parse();
+        $classUpdater = new ClassUpdater();
+        $classUpdater->setClass($contactControllerClass);
+        $classUpdater->setSourceFile('/Users/uzielgl/apps/kualisoft/app/Http/Controllers/ContactController.php');
 
+        $classUpdater->updateCode();
 
 
 

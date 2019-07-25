@@ -20,15 +20,6 @@ abstract class ClassDiagram extends UmlSource
     protected $sourceFile;
 
 
-    public function getClasses()
-    {
-
-    }
-
-    public function getPackages()
-    {
-
-    }
 
     public function setSourceFile($source_file)
     {
@@ -40,12 +31,22 @@ abstract class ClassDiagram extends UmlSource
         return file_get_contents($this->sourceFile);
     }
 
+    public function updateCode()
+    {
+        $container = $this->parse();
+
+        foreach ($container->namespaces as $ns) {
+            foreach ($ns->classes as $class) {
+
+            }
+        }
+    }
+
 
     /**
      * Transform the source code into and array with packages and classes.
      *
      * @return void
      */
-    abstract public function parse();
-
+    abstract public function getContainerClasses();
 }

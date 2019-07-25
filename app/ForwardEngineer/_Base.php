@@ -20,7 +20,7 @@ class _Base implements \JsonSerializable
 {
     use DelegatesToResource;
 
-    protected $resource;
+    public $resource;
 
     /**
      * _Namespace constructor.
@@ -34,5 +34,10 @@ class _Base implements \JsonSerializable
     public function jsonSerialize()
     {
         return get_object_vars($this);
+    }
+
+    public function getQualifiedName()
+    {
+        return str_replace('.', '\\', $this->name);
     }
 }

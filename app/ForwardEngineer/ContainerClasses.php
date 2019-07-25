@@ -17,9 +17,9 @@ namespace App\ForwardEngineer;
 class ContainerClasses implements \JsonSerializable
 {
 
-    protected $namespaces = [];
+    public $namespaces = [];
 
-    protected $classes = [];
+    public $classes = [];
 
     /**
      * Add Namespaces.
@@ -63,7 +63,7 @@ class ContainerClasses implements \JsonSerializable
 
         foreach ($this->classes as $class) {
             $full_class_name = $class->name;
-            if ($relation->connection == 'herency' and $relation->children == $full_class_name) {
+            if ($relation->name == 'herency' and $relation->children == $full_class_name) {
                 $class->relations[] = $relation;
             }
         }
@@ -71,7 +71,7 @@ class ContainerClasses implements \JsonSerializable
         foreach ($this->namespaces as $ns) {
             foreach ($ns->classes as $class) {
                 $full_class_name = $ns->name . '.' . $class->name;
-                if ($relation->connection == 'herency' and $relation->children == $full_class_name) {
+                if ($relation->name == 'herency' and $relation->children == $full_class_name) {
                     $class->relations[] = $relation;
                 }
             }
